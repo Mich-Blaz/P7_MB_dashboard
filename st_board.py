@@ -99,7 +99,6 @@ pred_class=res["pred_class"]
 pred_proba=res["pred_proba"]
 
 shap_val=pd.DataFrame(res["shap_val"],index=['Shap locale']).append(df_shap)
-st.dataframe(shap_val.T.sort_values(by='Shap locale',ascending=False))
 
 
 
@@ -165,7 +164,6 @@ all_df_fig=Nearest_client.append(our_client)
 
 if pr==1:
     shap_val.loc['Shap locale']=-1*(shap_val.loc['Shap locale'])
-st.dataframe(shap_val)
 
 
 labels=['Le client rembourse','Le client de remboursera pas']
