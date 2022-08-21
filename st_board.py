@@ -224,6 +224,41 @@ def fig_by_type(d_,col_,chx_hue=choice_hue):
     if (str(d_[col_].dtypes)=='float64') or ((str(d_[col_].dtypes)=='int64') and d_[col_].nunique()>=3):
         if choice_plot=='Histogramme':
             ax=sns.histplot(x=col_,hue=chx_hue,data=d_,bins=20)
+            ax.set_ylabel('Count',fontsize=10)
+	
+        else:
+            ax=sns.kdeplot(x=col_,hue=chx_hue,data=d_)
+            ax.set_ylabel('Density',fontsize=10)
+
+        limy,chx_hue=ax.get_ylim(),choice_hue
+        ax.vlines(d_.loc[20,col_],0,limy[1],label='Selected client',colors='red',linestyles='dashed')
+        #ax.legend(fontsize=5)
+        ax.tick_params(labelsize=8)
+        ax.set_title(col_+': '+str(np.round(d_.loc[20,col_],4)) ,fontsize=10)
+        ax.grid()
+
+        ax.set_xlabel('')
+        return fig,ax
+
+    if ((str(d_[col_].dtypes)=='object') or d_[col_].nunique()<3):
+        ax = sns.countplot(y=col_, hue=chx_hue, data=d_)
+
+        ax.legend(fontsize=9)
+        ax.tick_params(labelsize=8,rotation=25)
+        ax.grid()
+        ax.set_ylabel('')
+        ax.set_xlabel('Count',fontsize=10)
+
+        ax.set_title(col_+': '+str(d_.loc[20,col_]),fontsize=12)
+        return fig,ax
+    
+
+def fig_by_type2(d_,col_,chx_hue=choice_hue):
+    limy=0
+    fig, ax = plt.subplots(figsize=(8,5))
+    if (str(d_[col_].dtypes)=='float64') or ((str(d_[col_].dtypes)=='int64') and d_[col_].nunique()>=3):
+        if choice_plot=='Histogramme':
+            ax=sns.histplot(x=col_,hue=chx_hue,data=d_,bins=100)
         else:
             ax=sns.kdeplot(x=col_,hue=chx_hue,data=d_)
         limy,chx_hue=ax.get_ylim(),choice_hue
@@ -248,7 +283,6 @@ def fig_by_type(d_,col_,chx_hue=choice_hue):
 
         ax.set_title(col_+': '+str(d_.loc[20,col_]),fontsize=12)
         return fig,ax
-    
 ##### Affichage les graphs des variables
 
 
@@ -386,3 +420,21 @@ axes[0].grid()
 
 st.pyplot(fig)
 
+st.markdown("""---""")
+
+st.header('Affichage choix features')
+
+colfa,colfb=st.columns([1,2])
+feat_to_show = colfa.selectbox("Feature", shap_val.columns)
+colfa.metric(
+    label=' '.join(feat_to_show.lower().split('_')).capitalize(),
+    value=our_client[feat_to_show].values[0])
+
+expfa=colfa.expander("INFO: ")
+rtc=retrieve_col(feat_to_show,des=df_col)
+for k in retrieve_col(feat_to_show,des=df_col):
+    expfa.write(k+' :   '+str(rtc[k]))
+
+
+fig,ax=fig_by_type2(all_df_fig,feat_to_show)
+colfb.pyplot(fig)
