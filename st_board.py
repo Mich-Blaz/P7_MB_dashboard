@@ -386,7 +386,7 @@ if choice_db=='Globale':
 
 st.markdown("""---""")
 
-st.header('Features importance: Local vs Global')
+st.header('Features importance: Local & Global')
 
 
 col_shaploc=abs(shap_val.T['Shap locale']).T.sort_values(ascending=False).iloc[:10].index.values
@@ -422,7 +422,7 @@ st.pyplot(fig)
 
 st.markdown("""---""")
 
-st.header('Affichage choix features')
+st.header('Affichage feature choisi')
 
 colfa,colfb=st.columns([1,2])
 feat_to_show = colfa.selectbox("Feature", shap_val.columns)
